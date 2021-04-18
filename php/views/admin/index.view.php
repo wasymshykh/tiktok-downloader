@@ -19,7 +19,12 @@
     <?php if (!empty($videos)): ?>
     <div class="videos-container">
         <?php foreach ($videos as $video): ?>
-        <div class="video-box" data-videoid="<?=$video->id?>" data-username="<?=$video->author->uniqueId?>">
+        <div class="video-box" 
+            data-videoid="<?=$video->id?>" data-username="<?=$video->author->uniqueId?>"
+            data-author="<?=$video->author->id?>" data-nick="<?=$video->author->nickname?>"
+            data-thumb="<?=$video->author->avatarThumb?>" data-cover="<?=$video->video->dynamicCover?>"
+            data-description="<?=$video->desc?>" data-created="<?=$video->createTime?>"
+        >
             <div class="video-box-dynamic">
                 <div class="profile-top">
                     <div class="profile-icon">
@@ -49,9 +54,9 @@
                     </div>
                 </div>
                 <div class="video-box-actions-bottom">
-                    <div class="video-box-action action-save">
-                        <div class="v-b-a-icon"><i class="fas fa-file-upload"></i></div>
-                        <div class="v-b-a-text">save</div>
+                    <div class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'action-saved': 'action_save'?>">
+                        <div class="v-b-a-icon"><i class="fas <?=array_key_exists($video->id, $saved_ids)? 'fa-check': 'fa-file-upload'?>"></i></div>
+                        <div class="v-b-a-text"><?=array_key_exists($video->id, $saved_ids)? 'saved': 'save'?></div>
                     </div>
                     <div class="video-box-action action-download">
                         <div class="v-b-a-icon"><i class="fas fa-download"></i></div>
@@ -76,3 +81,35 @@
     <?php endif; ?>
 
 <?php endif; ?>
+
+<script>
+    $('.action-save').on('click', (e) => {
+        let target = $(e.target.parentElement.parentElement.parentElement);
+        const data = { save_video: "", video_id: target.attr('data-videoid'),
+        username: target.attr('data-username'), author: target.attr('data-author'), thumb: target.attr('data-thumb'),
+        nick: target.attr('data-nick'), cover: target.attr('data-cover'), desc: target.attr('data-description'), created: target.attr('data-created')};
+
+        let t = $(e.target);
+        t.addClass('loading');
+        let ic = t.find('.v-b-a-icon i');
+
+        $.ajax('<?=URL?>/admin/save_video.php', {
+            method: "POST",
+            data: data,
+            success: (d) => {
+                t.removeClass('loading').removeClass('error').removeClass('save').addClass('saved');
+                t.find('.v-b-a-text').text('saved');
+                ic.removeClass('fa-file-upload');
+                ic.addClass('fa-check');
+            },
+            error: (e) => {
+                if (e.responseJSON === undefined || e.responseJSON.type === 'error') {
+                    t.removeClass('loading').addClass('error');
+                    t.find('.v-b-a-text').text('error, retry!');
+                    ic.removeClass('fa-file-upload');
+                    ic.addClass('fa-redo');
+                }
+            }
+        });
+    })
+</script>

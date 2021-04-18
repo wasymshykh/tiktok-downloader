@@ -100,4 +100,49 @@ class Account {
 
     }
 
+    public function save_video_data ($user_id, $video_id, $author_id, $username, $nick, $author_picture, $description, $cover, $created, $original)
+    {
+        $v = "video_";
+        $q = "INSERT INTO `videos` (`{$v}id`, `{$v}user_id`, `{$v}author_id`, `{$v}author_username`, `{$v}author_nick`, `{$v}author_picture`, `{$v}cover`, `{$v}desc`, `{$v}dated`, `{$v}original`, `{$v}created`) VALUE ";
+        $q .= "(:i, :u, :ai, :au, :an, :ap, :c, :d, :da, :o, :dt)";
+
+        $s = $this->db->prepare($q);
+        $s->bindParam(":i", $video_id);
+        $s->bindParam(":u", $user_id);
+        $s->bindParam(":ai", $author_id);
+        $s->bindParam(":au", $username);
+        $s->bindParam(":an", $nick);
+        $s->bindParam(":ap", $author_picture);
+        $s->bindParam(":c", $cover);
+        $s->bindParam(":d", $description);
+        $s->bindParam(":da", $created);
+        $s->bindParam(":o", $original);
+        $dt = current_date();
+        $s->bindParam(":dt", $dt);
+
+        if (!$s->execute()) {
+            $failure = $this->class_name.'.save_video_data - E.02: Failure';
+            $this->logs->create($this->class_name_lower, $failure, json_encode($s->errorInfo()));
+            return ['status' => false, 'type' => 'query', 'data' => $failure];
+        }
+
+        return ['status' => true, 'type' => 'success'];
+    }
+
+    public function get_saved_videos ($user_id)
+    {
+        $q = "SELECT * FROM `videos` WHERE `video_user_id` = :i";
+        $s = $this->db->prepare($q);
+        $s->bindParam(":i", $user_id);
+        if (!$s->execute()) {
+            $failure = $this->class_name.'.get_saved_videos - E.02: Failure';
+            $this->logs->create($this->class_name_lower, $failure, json_encode($s->errorInfo()));
+            return ['status' => false, 'type' => 'query', 'data' => $failure];
+        }
+        if ($s->rowCount() > 0) {
+            return ['status' => true, 'type' => 'success', 'data' => $s->fetchAll()];
+        }
+        return ['status' => false, 'type' => 'empty', 'data' => 'No videos found.'];
+    }
+
 }

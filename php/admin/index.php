@@ -28,6 +28,18 @@ if (isset($_GET['h']) && !empty($_GET['h']) && is_string($_GET['h']) && !empty(n
     $hashtag = normal_text($_GET['h']);
 }
 
+$saved_ids = [];
+$saved_videos = $a->get_saved_videos($auth['user_id']);
+if ($saved_videos['status']) {
+    $saved_videos = $saved_videos['data'];
+    // mapping videos by id
+    foreach ($saved_videos as $v) {
+        $saved_ids[$v['video_id']] = $v;
+    }
+} else {
+    $saved_videos = [];
+}
+
 $videos = [];
 if (isset($hashtag) && !empty($hashtag)) {
     $videos = $a->search_hashtag($hashtag, $page);
@@ -38,7 +50,6 @@ if (isset($hashtag) && !empty($hashtag)) {
         $videos = [];
     }
 }
-
 
 $page_title = "Admin";
 include_once DIR.'views/layout/header.view.php';

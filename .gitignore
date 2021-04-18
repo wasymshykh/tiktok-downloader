@@ -2,3 +2,6 @@
 /node-api/node_modules
 /node-api/package-lock.json
 /php/vendor
+/php/saved/dynamic/*.webp
+/php/saved/thumb/*.jpeg
+/php/saved/videos/*.mp4
