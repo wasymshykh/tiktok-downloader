@@ -31,6 +31,7 @@
     // Get db handle
     $db = (new DB())->connect();
     $settings = new Settings($db);
+    $a = new Account($db);
 
     define('URL', $settings->url());
 
