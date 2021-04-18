@@ -66,7 +66,7 @@ class Account {
         
         try {
             $headers = array('Accept' => 'application/json');
-            $request = Requests::get(PYTHON_HOST."/$page/$hashtag", $headers);
+            $request = Requests::get(PYTHON_HOST."/$page/$hashtag", $headers, ['timeout' => 30]);
             $body = json_decode($request->body);
 
             if ($body->message === 'Success') {
@@ -84,8 +84,8 @@ class Account {
     {
         
         try {
-            $headers = array('Accept' => 'application/json');
-            $request = Requests::get(NODE_HOST."/get/$username/$id", $headers);
+            $headers = ['Accept' => 'application/json'];
+            $request = Requests::get(NODE_HOST."/get/$username/$id", $headers, ['timeout' => 30]);
             
             $body = json_decode($request->body);
 
@@ -95,7 +95,7 @@ class Account {
                 return ['status' => false, 'data' => "Unable to get video download link", 'message' => $body->message];
             }
         } catch (Exception $e) {
-            die('Please check, node process is not running.');
+            die('Please check, node process is not running.'. var_dump($e));
         }
 
     }

@@ -25,11 +25,11 @@ errors = {
 app = Flask(__name__)
 server = Api(app, errors=errors, catch_all_404s=True)
 
-tiktok = TikTokApi.get_instance()
 
 # this token need to be updated after some hours
 VERIFY_TOKEN = "YOUR_TOKEN"
-LIMIT_PER_PAGE = 10
+LIMIT_PER_PAGE = 12
+tiktok = TikTokApi.get_instance(custom_verifyFp=VERIFY_TOKEN, use_test_endpoints=True, proxy="YOUR_PROXY")
 
 def no_exists (data, status=403, message = ""):
     if not message:
@@ -48,7 +48,7 @@ class Serve(Resource):
             no_exists(message="Tag can only contain alphabets and numbers")
 
         try:
-            content = tiktok.by_hashtag(count=LIMIT_PER_PAGE, offset=LIMIT_PER_PAGE*(page-1), hashtag=tag, custom_verifyFp=VERIFY_TOKEN)
+            content = tiktok.by_hashtag(count=LIMIT_PER_PAGE, offset=LIMIT_PER_PAGE*(page-1), hashtag=tag)
         except:
             no_exists(message="Failure", data="Unable to retrive results or data not found")
 

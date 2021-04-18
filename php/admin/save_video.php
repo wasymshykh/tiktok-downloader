@@ -8,6 +8,8 @@ header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
+set_time_limit(0);
+
 /* Check the authentication */
 $auth = $a->check_auth();
 if (!$auth['status']) {
@@ -45,13 +47,13 @@ if (isset($_POST['save_video'])) {
     }
 
     if (isset($_POST['thumb']) && !empty($_POST['thumb']) && is_string($_POST['thumb']) && !empty(normal_text($_POST['thumb']))) {
-        $thumb = normal_text($_POST['thumb']);
+        $thumb = $_POST['thumb'];
     } else {
         $errors[] = "Author thumb picture is required";
     }
 
     if (isset($_POST['cover']) && !empty($_POST['cover']) && is_string($_POST['cover']) && !empty(normal_text($_POST['cover']))) {
-        $cover = normal_text($_POST['cover']);
+        $cover = $_POST['cover'];
     } else {
         $errors[] = "Video cover picture is required";
     }
@@ -115,6 +117,41 @@ if (isset($_POST['save_video'])) {
         json_response(403, 'error', $errors);
     }
 
+} else if (isset($_POST['download_video'])) {
+    
+    if (isset($_POST['video_id']) && !empty($_POST['video_id']) && is_numeric($_POST['video_id']) && !empty(normal_text($_POST['video_id']))) {
+        $video_id = normal_text($_POST['video_id']);
+    } else {
+        $errors[] = "Video ID is required";
+    }
+
+    if (isset($_POST['username']) && !empty($_POST['username']) && is_string($_POST['username']) && !empty(normal_text($_POST['username']))) {
+        $username = normal_text($_POST['username']);
+    } else {
+        $errors[] = "Username is required";
+    }
+
+
+    if (empty($errors)) {
+
+        
+        $video = $a->get_video($video_id, $username);
+
+        if ($video['status']) {
+            
+            if (!empty($video['data'])) {
+                json_response(200, 'success', $video['data']);
+            } else {
+                json_response(400, 'error', ["System error: 1005"]);
+            }
+
+        } else {
+            json_response(400, 'error', [$video['data']]);
+        }
+
+    } else {
+        json_response(403, 'error', $errors);
+    }
 }
 
 $errors[] = "Bad request parameter";

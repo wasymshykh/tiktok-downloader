@@ -21,7 +21,7 @@ if (isset($_GET['p']) && !empty($_GET['p']) && is_numeric($_GET['p'])) {
 if (isset($_POST['hashtag']) && !empty($_POST['hashtag']) && is_string($_POST['hashtag']) && !empty(normal_text($_POST['hashtag']))) {
     // If form is submitted
     $hashtag = normal_text($_POST['hashtag']);
-    go(URL."/admin/?h=$hashtag&p=$page");
+    go(URL."/admin/?h=$hashtag&p=1");
 }
 
 if (isset($_GET['h']) && !empty($_GET['h']) && is_string($_GET['h']) && !empty(normal_text($_GET['h']))) {

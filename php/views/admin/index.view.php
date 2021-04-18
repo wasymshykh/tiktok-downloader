@@ -54,13 +54,15 @@
                     </div>
                 </div>
                 <div class="video-box-actions-bottom">
-                    <div class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'action-saved': 'action_save'?>">
+                    <div class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'action-saved': 'action-save'?>">
                         <div class="v-b-a-icon"><i class="fas <?=array_key_exists($video->id, $saved_ids)? 'fa-check': 'fa-file-upload'?>"></i></div>
                         <div class="v-b-a-text"><?=array_key_exists($video->id, $saved_ids)? 'saved': 'save'?></div>
+                        <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
                     </div>
                     <div class="video-box-action action-download">
-                        <div class="v-b-a-icon"><i class="fas fa-download"></i></div>
+                        <div class="v-b-a-icon"><i class="fa fa-download"></i></div>
                         <div class="v-b-a-text">download</div>
+                        <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
                     </div>
                 </div>
             </div>
@@ -97,7 +99,7 @@
             method: "POST",
             data: data,
             success: (d) => {
-                t.removeClass('loading').removeClass('error').removeClass('save').addClass('saved');
+                t.removeClass('loading').removeClass('error').addClass('saved');
                 t.find('.v-b-a-text').text('saved');
                 ic.removeClass('fa-file-upload');
                 ic.addClass('fa-check');
@@ -111,5 +113,47 @@
                 }
             }
         });
-    })
+    });
+    $('.action-download').on('click', (e) => {
+        let target = $(e.target.parentElement.parentElement.parentElement);
+        const data = { download_video: "", video_id: target.attr('data-videoid'), username: target.attr('data-username')};
+
+        let t = $(e.target);
+        t.addClass('loading');
+        let ic = t.find('.v-b-a-icon i');
+
+        $.ajax('<?=URL?>/admin/save_video.php', {
+            method: "POST",
+            data: data,
+            success: (d) => {
+                t.removeClass('loading').removeClass('error').removeClass('download').addClass('ready');
+                t.find('.v-b-a-text').text('ready');
+                ic.removeClass('fa-download').addClass('fa-check');
+                
+                if (d.code === 200 && d.message !== "") {
+                    download(d.message, data.video_id+".mp4");
+                }
+            },
+            error: (e) => {
+                if (e.responseJSON === undefined || e.responseJSON.type === 'error') {
+                    t.removeClass('loading').addClass('error');
+                    t.find('.v-b-a-text').text('error, retry!');
+                    ic.removeClass('fa-download').addClass('fa-redo');
+                }
+            }
+        });
+    });
+
+    function download(url, filename) {
+        url = "data:video/mp4,"+url;
+        fetch(url).then(function(t) {
+            return t.blob().then((b)=>{
+                var a = document.createElement("a");
+                a.href = URL.createObjectURL(b);
+                a.setAttribute("download", filename);
+                a.click();
+            });
+        });
+    }
+
 </script>
