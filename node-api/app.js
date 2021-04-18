@@ -1,23 +1,23 @@
-const express = require('express')
+const express = require('express');
 const TikTokScraper = require('tiktok-scraper');
 
-const app = express()
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json())
+const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-const get_router = express.Router()
+const get_router = express.Router();
 
-const isNum = (value) => {
-    return /^-?\d+$/.test(value);
+const isNum = (v) => {
+    return /^-?\d+$/.test(v);
 }
 
 const getVideo = async (req, res) => {
-    let data = [];
+    let data = {};
     let valid = true;
     let status = 200;
 
-    let {user} = req.params
-    let {video_id} = req.params
+    let {user} = req.params;
+    let {video_id} = req.params;
 
     if (user == undefined || user.trim() == "") {
         data = {'data': 'User cannot be empty'};
@@ -53,10 +53,10 @@ app.use('/get', get_router);
 
 
 app.use((req, res, next) => {
-    return res.status(400).json({'data': 'Request parameter is incorrect', 'message': 'Invalid Request'})
+    return res.status(400).json({'data': 'Request parameter is incorrect', 'message': 'Invalid Request'});
 })
 
 app.listen(3000, (err) => {
-    if (err) throw err
-    console.log('Server running in http://127.0.0.1:3000')
+    if (err) throw err;
+    console.log('Server running in http://127.0.0.1:3000');
 })
