@@ -24,6 +24,8 @@
 
     // Auto load classes
     include DIR . 'app/auto_loader.php';
+    // Auto load composer
+    include DIR . 'vendor/autoload.php';
 
     // Functions
     include DIR . 'app/functions.php';
@@ -34,6 +36,8 @@
     $a = new Account($db);
 
     define('URL', $settings->url());
+    define('PYTHON_HOST', "http://localhost:".$settings->fetch('python_port'));
+    define('NODE_HOST', "http://localhost:".$settings->fetch('node_port'));
 
     // checking for session message
     if (isset($_SESSION['message']) && !empty($_SESSION['message'])) {

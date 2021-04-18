@@ -1,3 +1,4 @@
 /python-api/.venv
 /node-api/node_modules
 /node-api/package-lock.json
+/php/vendor

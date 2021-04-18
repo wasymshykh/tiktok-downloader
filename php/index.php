@@ -2,6 +2,12 @@
 
 require_once 'app/start.php';
 
+$errors = [];
+
+if (!empty($s_error)) {
+    $errors[] = $s_error;
+}
+
 if (isset($_POST) && !empty($_POST)) {
 
     if (isset($_POST['username']) && !empty($_POST['username']) && is_string($_POST['username']) && !empty(normal_text($_POST['username']))) {
