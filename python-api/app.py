@@ -38,8 +38,8 @@ def no_exists (data, status=403, message = ""):
 
 class Serve(Resource):
     def get(self, page, tag):
-        if page > 10:
-            no_exists(message="Invalid Request", data="More than 10 pages are not allowed")
+        if page < 1:
+            no_exists(message="Invalid Request", data="Page must have minimum 1 value")
         if page > 10:
             no_exists(message="Limit Exceeded", data="More than 10 pages are not allowed")
         if not tag:
@@ -48,7 +48,7 @@ class Serve(Resource):
             no_exists(message="Tag can only contain alphabets and numbers")
 
         try:
-            content = tiktok.by_hashtag(count=LIMIT_PER_PAGE, offset=LIMIT_PER_PAGE*page, hashtag=tag, custom_verifyFp=VERIFY_TOKEN)
+            content = tiktok.by_hashtag(count=LIMIT_PER_PAGE, offset=LIMIT_PER_PAGE*(page-1), hashtag=tag, custom_verifyFp=VERIFY_TOKEN)
         except:
             no_exists(message="Failure", data="Unable to retrive results or data not found")
 

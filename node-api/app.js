@@ -1,5 +1,6 @@
 const express = require('express');
 const TikTokScraper = require('tiktok-scraper');
+const {ssstik} = require('./alternate');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -35,15 +36,41 @@ const getVideo = async (req, res) => {
     }
 
     if (valid) {
+        let failure = false;
+        let url = `https://www.tiktok.com/@${user}/video/${video_id}`;
         try {
-            const video_details = await TikTokScraper.getVideoMeta(`https://www.tiktok.com/@${user}/video/${video_id}`, {noWaterMark: true});
-            data = video_details;
+            const video_details = await TikTokScraper.getVideoMeta(url, {noWaterMark: true});
+            
+            if (video_details.collector.length > 0) {
+                if (video_details.collector[0].videoUrlNoWaterMark !== undefined && video_details.collector[0].videoUrlNoWaterMark !== "") {
+                    data = {'download': video_details.collector[0].videoUrlNoWaterMark, 'message': 'Success'};
+                } else {
+                    failure = true;
+                }
+            } else {
+                failure = true;
+                data = {'data': 'Unable to retrieve', 'message': 'Failure'};
+            }
         } catch (error) {
-            data = {'data': 'Unable to retrieve', 'message': 'Failure'};
-            status = 403;
+            failure = true;
+        }
+
+        if (failure) {
+            response = await ssstik(url);
+            if (response.status) {
+                if (response.video !== undefined && response.video !== "") {
+                    data = {'download': response.video, 'message': 'Success'}
+                } else {
+                    data = {'data': 'Unable to retrieve', 'message': 'Failure'};
+                    status = 403;
+                }
+            } else {
+                data = {'data': 'Unable to retrieve', 'message': 'Failure'};
+                status = 403;
+            }
         }
     }
-    
+        
     return res.status(status).json(data);
 }
 
