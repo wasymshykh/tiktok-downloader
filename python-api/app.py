@@ -47,8 +47,6 @@ class Serve(Resource):
         if not tag.isalnum():
             no_exists(message="Tag can only contain alphabets and numbers")
 
-        print(LIMIT_PER_PAGE)
-        print(LIMIT_PER_PAGE*page)
         try:
             content = tiktok.by_hashtag(count=LIMIT_PER_PAGE, offset=LIMIT_PER_PAGE*page, hashtag=tag, custom_verifyFp=VERIFY_TOKEN)
         except:

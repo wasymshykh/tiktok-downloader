@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "express": "^4.17.1",
+    "tiktok-scraper": "^1.4.22"
+  }
+}
