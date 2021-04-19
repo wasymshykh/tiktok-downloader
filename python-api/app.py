@@ -14,11 +14,6 @@ errors = {
         'data': "Request parameter is incorrect",
         'status': 404,
         'message': "Invalid Request"
-    },
-    'NotFound': {
-        'data': "Request parameter is incorrect",
-        'status': 404,
-        'message': "Invalid Request"
     }
 }
 

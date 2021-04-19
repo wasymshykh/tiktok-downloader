@@ -66,7 +66,7 @@ class Account {
         
         try {
             $headers = array('Accept' => 'application/json');
-            $request = Requests::get(PYTHON_HOST."/$page/$hashtag", $headers, ['timeout' => 30]);
+            $request = Requests::get(PYTHON_HOST."/$page/$hashtag", $headers, ['timeout' => 60]);
             $body = json_decode($request->body);
 
             if ($body->message === 'Success') {
@@ -85,7 +85,7 @@ class Account {
         
         try {
             $headers = ['Accept' => 'application/json'];
-            $request = Requests::get(NODE_HOST."/get/$username/$id", $headers, ['timeout' => 30]);
+            $request = Requests::get(NODE_HOST."/get/$username/$id", $headers, ['timeout' => 60]);
             
             $body = json_decode($request->body);
 
@@ -143,6 +143,40 @@ class Account {
             return ['status' => true, 'type' => 'success', 'data' => $s->fetchAll()];
         }
         return ['status' => false, 'type' => 'empty', 'data' => 'No videos found.'];
+    }
+
+    public function get_saved_video_by_id ($user_id, $video_id)
+    {
+        $q = "SELECT * FROM `videos` WHERE `video_user_id` = :i AND `video_id` = :v";
+        $s = $this->db->prepare($q);
+        $s->bindParam(":i", $user_id);
+        $s->bindParam(":v", $video_id);
+        if (!$s->execute()) {
+            $failure = $this->class_name.'.get_saved_video_by_id - E.02: Failure';
+            $this->logs->create($this->class_name_lower, $failure, json_encode($s->errorInfo()));
+            return ['status' => false, 'type' => 'query', 'data' => $failure];
+        }
+        if ($s->rowCount() > 0) {
+            return ['status' => true, 'type' => 'success', 'data' => $s->fetch()];
+        }
+        return ['status' => false, 'type' => 'empty', 'data' => 'No video found.'];
+    }
+
+    public function remove_saved_video_by_id ($user_id, $video_id)
+    {
+        $q = "DELETE FROM `videos` WHERE `video_user_id` = :i AND `video_id` = :v";
+        $s = $this->db->prepare($q);
+        $s->bindParam(":i", $user_id);
+        $s->bindParam(":v", $video_id);
+        if (!$s->execute()) {
+            $failure = $this->class_name.'.remove_saved_video_by_id - E.02: Failure';
+            $this->logs->create($this->class_name_lower, $failure, json_encode($s->errorInfo()));
+            return ['status' => false, 'type' => 'query', 'data' => $failure];
+        }
+        if ($s->rowCount() > 0) {
+            return ['status' => true, 'type' => 'success'];
+        }
+        return ['status' => false, 'type' => 'empty'];
     }
 
 }

@@ -1,3 +1,5 @@
+<div class="nav"><a href="<?=URL?>/admin/saved.php" class="blue-button"><i class="fas fa-photo-video"></i> View Saved</a></div>
+
 <div class="search-container">
     <form action="" method="post" class="search-form">
         <label for="hashtag">#</label>

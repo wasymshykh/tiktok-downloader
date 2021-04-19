@@ -133,20 +133,61 @@ if (isset($_POST['save_video'])) {
 
 
     if (empty($errors)) {
-
         
         $video = $a->get_video($video_id, $username);
-
         if ($video['status']) {
-            
             if (!empty($video['data'])) {
                 json_response(200, 'success', $video['data']);
             } else {
                 json_response(400, 'error', ["System error: 1005"]);
             }
-
         } else {
             json_response(400, 'error', [$video['data']]);
+        }
+
+    } else {
+        json_response(403, 'error', $errors);
+    }
+
+} else if (isset($_POST['remove_video'])) {
+
+    if (isset($_POST['video_id']) && !empty($_POST['video_id']) && is_numeric($_POST['video_id']) && !empty(normal_text($_POST['video_id']))) {
+        $video_id = normal_text($_POST['video_id']);
+
+        // checking if video id is in db
+        $r = $a->get_saved_video_by_id($auth['user_id'], $video_id);
+        if ($r['status']) {
+            $r = $r['data'];
+        } else {
+            $errors[] = "Video is not found";
+        }
+    } else {
+        $errors[] = "Video ID is required";
+    }
+
+    if (empty($errors)) {
+
+        // removing video file
+        $video_file = DIR.'saved/videos/'.$r['video_id'].'.mp4';
+        if (file_exists($video_file)) {
+            unlink($video_file);
+        }
+        // removing thumb file
+        $thumb_file = DIR.'saved/thumb/'.$r['video_author_picture'];
+        if (file_exists($thumb_file)) {
+            unlink($thumb_file);
+        }
+        // removing dynamic cover file
+        $dynamic_file = DIR.'saved/dynamic/'.$r['video_cover'];
+        if (file_exists($dynamic_file)) {
+            unlink($dynamic_file);
+        }
+
+        $r = $a->remove_saved_video_by_id($auth['user_id'], $video_id);
+        if ($r['status']) {
+            json_response(200, 'success', ["Video has been removed"]);
+        } else {
+            json_response(403, 'error', ["Unable to remove video"]);
         }
 
     } else {

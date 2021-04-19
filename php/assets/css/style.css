@@ -102,6 +102,14 @@ a {
     margin-top: 2em;
 }
 
+.nav {
+    display: flex;
+    justify-content: flex-start;
+    max-width: 1100px;
+    margin: 0.5em auto;
+}
+
+.blue-button,
 .field-submit button {
     padding: 0.6em 1.2em;
     background: linear-gradient(#10293b, #11293c, #191028, #070f1f);
@@ -383,7 +391,12 @@ a {
     border-bottom: 1px solid #bbfaff;
     border-left: 1px solid #bbfaff;
 }
-
+.video-box-action.action-remove {
+    background-color: #fff7f9;
+    border-top: 1px solid #ffe4eb;
+    border-bottom: 1px solid #ffe4eb;
+    border-left: 1px solid #ffe4eb;
+}
 .video-box-action.action-save .v-b-a-icon {
     border-bottom: 2px solid #69C9D0;
     color: #191028;
@@ -391,6 +404,10 @@ a {
 .video-box-action.action-saved .v-b-a-icon {
     border-bottom: 2px solid #69C9D0;
     background-color: #69C9D0;
+    color: #191028;
+}
+.video-box-action.action-remove .v-b-a-icon {
+    border-bottom: 2px solid #EE1D52;
     color: #191028;
 }
 .video-box-action.action-download .v-b-a-icon {
