@@ -4,6 +4,11 @@
         <input type="text" name="hashtag" id="hashtag" placeholder="Search hashtag..." required>
         <button type="submit"><i class="fas fa-arrow-right"></i></button>
     </form>
+    
+    <?php if (!empty($errors)): ?>
+        <div class="field-error"><strong>Error<?=count($errors)>1?'s':''?>!</strong> <?php foreach ($errors as $error): ?><?=$error.'. '?><?php endforeach;?></div>
+    <?php endif; ?>
+
 </div>
 
 <div class="results">
@@ -70,8 +75,7 @@
 </div>
 
 <script>
-
-$('.action-remove').on('click', (e) => {
+    $('.action-remove').on('click', (e) => {
         let target = $(e.target.parentElement.parentElement.parentElement);
         const data = { remove_video: "", video_id: target.attr('data-videoid')};
 
@@ -94,6 +98,5 @@ $('.action-remove').on('click', (e) => {
             }
         });
     });
-
 </script>
 

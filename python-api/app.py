@@ -23,7 +23,7 @@ server = Api(app, errors=errors, catch_all_404s=True)
 
 # this token need to be updated after some hours
 VERIFY_TOKEN = "YOUR_TOKEN"
-LIMIT_PER_PAGE = 12
+LIMIT_PER_PAGE = 30
 tiktok = TikTokApi.get_instance(custom_verifyFp=VERIFY_TOKEN, use_test_endpoints=True, proxy="YOUR_PROXY")
 
 def no_exists (data, status=403, message = ""):
@@ -38,9 +38,9 @@ class Serve(Resource):
         if page > 10:
             no_exists(message="Limit Exceeded", data="More than 10 pages are not allowed")
         if not tag:
-            no_exists(message="Tag cannot be empty string")
+            no_exists(message="Empty" data="Tag cannot be empty string")
         if not tag.isalnum():
-            no_exists(message="Tag can only contain alphabets and numbers")
+            no_exists(message="Invalid String" data="Tag can only contain alphabets and numbers")
 
         try:
             content = tiktok.by_hashtag(count=LIMIT_PER_PAGE, offset=LIMIT_PER_PAGE*(page-1), hashtag=tag)

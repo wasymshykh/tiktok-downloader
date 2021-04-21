@@ -63,7 +63,6 @@ class Account {
 
     public function search_hashtag ($hashtag, $page)
     {
-        
         try {
             $headers = array('Accept' => 'application/json');
             $request = Requests::get(PYTHON_HOST."/$page/$hashtag", $headers, ['timeout' => 60]);
@@ -75,14 +74,12 @@ class Account {
                 return ['status' => false, 'data' => $body->data, 'message' => $body->message];
             }
         } catch (Exception $e) {
-            die('Please check, python process is not running.');
+            return ['status' => false, 'data' => "Unable to retrive results within time limit", 'message' => "Python Process"];
         }
-
     }
 
     public function get_video ($id, $username)
     {
-        
         try {
             $headers = ['Accept' => 'application/json'];
             $request = Requests::get(NODE_HOST."/get/$username/$id", $headers, ['timeout' => 60]);
@@ -95,9 +92,8 @@ class Account {
                 return ['status' => false, 'data' => "Unable to get video download link", 'message' => $body->message];
             }
         } catch (Exception $e) {
-            die('Please check, node process is not running.'. var_dump($e));
+            return ['status' => false, 'data' => "Unable to retrive results within time limit", 'info' => $e->getMessage(), 'message' => "Node Process"];
         }
-
     }
 
     public function save_video_data ($user_id, $video_id, $author_id, $username, $nick, $author_picture, $description, $cover, $created, $original)

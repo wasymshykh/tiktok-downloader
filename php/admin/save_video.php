@@ -19,6 +19,7 @@ $auth = $auth['data'];
 /* //--- Auth check end */
 
 $errors = [];
+$logs = new Logs($db);
 
 if (isset($_POST['save_video'])) {
 
@@ -78,26 +79,32 @@ if (isset($_POST['save_video'])) {
         if ($video['status']) {
             
             if (!empty($video['data'])) {
-                $video_stream = file_get_contents($video['data']);
-                $thumb_stream = file_get_contents($thumb);
-                $cover_stream = file_get_contents($cover);
-                
-                $video_file_name = DIR."saved/videos/$video_id.mp4";
-                $handle = fopen($video_file_name,"w+");
-                fwrite($handle, $video_stream);
-                fclose($handle);
 
-                $thumb_file_name = "$author_id.jpeg";
-                $thumb_file_path = DIR."saved/thumb/$thumb_file_name";
-                $handle = fopen($thumb_file_path,"w+");
-                fwrite($handle, $thumb_stream);
-                fclose($handle);
-
-                $cover_file_name = "$video_id.webp";
-                $cover_file_path = DIR."saved/dynamic/$cover_file_name";
-                $handle = fopen($cover_file_path,"w+");
-                fwrite($handle, $cover_stream);
-                fclose($handle);
+                try {
+                    $video_stream = file_get_contents($video['data']);
+                    $thumb_stream = file_get_contents($thumb);
+                    $cover_stream = file_get_contents($cover);
+                    
+                    $video_file_name = DIR."saved/videos/$video_id.mp4";
+                    $handle = fopen($video_file_name,"w+");
+                    fwrite($handle, $video_stream);
+                    fclose($handle);
+    
+                    $thumb_file_name = "$author_id.jpeg";
+                    $thumb_file_path = DIR."saved/thumb/$thumb_file_name";
+                    $handle = fopen($thumb_file_path,"w+");
+                    fwrite($handle, $thumb_stream);
+                    fclose($handle);
+    
+                    $cover_file_name = "$video_id.webp";
+                    $cover_file_path = DIR."saved/dynamic/$cover_file_name";
+                    $handle = fopen($cover_file_path,"w+");
+                    fwrite($handle, $cover_stream);
+                    fclose($handle);
+                } catch (Exception $e) {
+                    $logs->create("node_api", "Exception in save_video.php", json_encode($e->getMessage()));
+                    json_response(400, 'error', ["Unable to save the file"]);
+                }
 
                 $r = $a->save_video_data($auth['user_id'], $video_id, $author_id, $username, $nick, $thumb_file_name, $description, $cover_file_name, $created, $video['data']);
                 if ($r['status']) {
@@ -106,10 +113,14 @@ if (isset($_POST['save_video'])) {
                     json_response(400, 'error', ["System error: 1006"]);
                 }
             } else {
+                $logs->create("python_api", "Exception in save_video.php", json_encode(['data' => $r['data']]));
                 json_response(400, 'error', ["System error: 1005"]);
             }
 
         } else {
+            $_e = ['data' => $video['data'], 'message' => $video['message']];
+            if (isset($video['info'])) { $_e['info'] = $video['info']; }
+            $logs->create("python_api", "Exception in save_video.php", json_encode($_e));
             json_response(400, 'error', [$video['data']]);
         }
 
@@ -131,7 +142,6 @@ if (isset($_POST['save_video'])) {
         $errors[] = "Username is required";
     }
 
-
     if (empty($errors)) {
         
         $video = $a->get_video($video_id, $username);
@@ -139,9 +149,13 @@ if (isset($_POST['save_video'])) {
             if (!empty($video['data'])) {
                 json_response(200, 'success', $video['data']);
             } else {
+                $logs->create("node_api", "Exception in save_video.php", json_encode(['data' => $r['data']]));
                 json_response(400, 'error', ["System error: 1005"]);
             }
         } else {
+            $_e = ['data' => $video['data'], 'message' => $video['message']];
+            if (isset($video['info'])) { $_e['info'] = $video['info']; }
+            $logs->create("node_api", "Exception in save_video.php", json_encode($_e));
             json_response(400, 'error', [$video['data']]);
         }
 
@@ -193,6 +207,7 @@ if (isset($_POST['save_video'])) {
     } else {
         json_response(403, 'error', $errors);
     }
+
 }
 
 $errors[] = "Bad request parameter";
