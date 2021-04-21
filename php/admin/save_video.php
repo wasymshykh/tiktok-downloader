@@ -113,14 +113,14 @@ if (isset($_POST['save_video'])) {
                     json_response(400, 'error', ["System error: 1006"]);
                 }
             } else {
-                $logs->create("python_api", "Exception in save_video.php", json_encode(['data' => $r['data']]));
+                $logs->create("node_api", "Exception in save_video.php", json_encode(['data' => $r['data']]));
                 json_response(400, 'error', ["System error: 1005"]);
             }
 
         } else {
             $_e = ['data' => $video['data'], 'message' => $video['message']];
             if (isset($video['info'])) { $_e['info'] = $video['info']; }
-            $logs->create("python_api", "Exception in save_video.php", json_encode($_e));
+            $logs->create("node_api", "Exception in save_video.php", json_encode($_e));
             json_response(400, 'error', [$video['data']]);
         }
 

@@ -65,11 +65,49 @@ class Account {
     {
         try {
             $headers = array('Accept' => 'application/json');
-            $request = Requests::get(PYTHON_HOST."/$page/$hashtag", $headers, ['timeout' => 60]);
+            $request = Requests::get(PYTHON_HOST."/hashtag/$page/$hashtag", $headers, ['timeout' => 60]);
             $body = json_decode($request->body);
 
             if ($body->message === 'Success') {
                 return ['status' => true, 'data' => $body->data];
+            } else {
+                return ['status' => false, 'data' => $body->data, 'message' => $body->message];
+            }
+        } catch (Exception $e) {
+            return ['status' => false, 'data' => "Unable to retrive results within time limit", 'message' => "Python Process"];
+        }
+    }
+
+    public function search_profile ($profile_name)
+    {
+        try {
+            $headers = array('Accept' => 'application/json');
+            $request = Requests::get(PYTHON_HOST."/profile/$profile_name", $headers, ['timeout' => 60]);
+            $body = json_decode($request->body);
+
+            if ($body->message === 'Success') {
+                return ['status' => true, 'data' => $body->data];
+            } else {
+                return ['status' => false, 'data' => $body->data, 'message' => $body->message];
+            }
+        } catch (Exception $e) {
+            return ['status' => false, 'data' => "Unable to retrive results within time limit", 'message' => "Python Process"];
+        }
+    }
+
+    public function search_video ($profile_name, $video_id)
+    {
+        try {
+            $headers = array('Accept' => 'application/json');
+            $request = Requests::get(PYTHON_HOST."/video/$profile_name/$video_id", $headers, ['timeout' => 60]);
+            $body = json_decode($request->body);
+
+            if ($body->message === 'Success') {
+                if (isset($body->data->itemInfo->itemStruct)) {
+                    return ['status' => true, 'data' => [$body->data->itemInfo->itemStruct]];
+                } else {
+                    return ['status' => false, 'data' => 'Unable to find the video', 'message' => '404'];
+                }
             } else {
                 return ['status' => false, 'data' => $body->data, 'message' => $body->message];
             }

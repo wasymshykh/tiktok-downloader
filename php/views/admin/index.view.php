@@ -1,115 +1,109 @@
 <div class="nav"><a href="<?=URL?>/admin/saved.php" class="blue-button"><i class="fas fa-photo-video"></i> View Saved</a></div>
 
-<div class="search-container">
-    <form action="" method="post" class="search-form">
-        <label for="hashtag">#</label>
-        <input type="text" name="hashtag" id="hashtag" placeholder="Search hashtag..." value="<?=(!empty($errors) && isset($hashtag))?$hashtag:''?>" required>
-        <button type="submit"><i class="fas fa-arrow-right"></i></button>
-    </form>
-    <?php if (!empty($errors)): ?>
-        <div class="field-error"><strong>Error<?=count($errors)>1?'s':''?>!</strong> <?php foreach ($errors as $error): ?><?=$error.'. '?><?php endforeach;?></div>
-    <?php endif; ?>
-</div>
+<?php include_once DIR.'views/layout/search.view.php'; ?>
 
-<?php if (!empty($hashtag)): ?>
+<?php if (!empty($content_type)): ?>
 <div class="results">
     <div class="results-title">
-        <h3>Search result for <strong>#<?=$hashtag?></strong></h3>
+        <h3>Search result for <strong><?=($content_type === 'hashtag')?"#$hashtag":($content_type === 'video'?"/@$profile_name/video/$video_id": ($content_type === 'profile' ? "@$profile_name": ''))?></strong></h3>
 
         <div class="go-back">
-            <a href="<?=URL?>/admin"><i class="fas fa-times"></i> Exit Search</a>
+            <a href="<?=URL?>/admin/"><i class="fas fa-times"></i> Exit Search</a>
         </div>
     </div>
 
     <?php if (!empty($videos)): ?>
-    <div class="videos-container">
-        <?php foreach ($videos as $video): ?>
-        <div class="video-box" data-videoid="<?=$video->id?>" data-username="<?=$video->author->uniqueId?>"
-            data-author="<?=$video->author->id?>" data-nick="<?=$video->author->nickname?>"
-            data-thumb="<?=$video->author->avatarThumb?>" data-cover="<?=$video->video->dynamicCover?>"
-            data-description="<?=$video->desc?>" data-created="<?=$video->createTime?>">
-            <div class="video-box-dynamic">
-                <div class="profile-top">
-                    <a href="https://www.tiktok.com/@<?=$video->author->nickname?>" target="blank" class="profile-icon">
-                        <img src="<?=$video->author->avatarThumb?>">
+        <div class="videos-container">
+            <?php foreach ($videos as $video): ?>
+            <div class="video-box" data-videoid="<?=$video->id?>" data-username="<?=$video->author->uniqueId?>"
+                data-author="<?=$video->author->id?>" data-nick="<?=$video->author->nickname?>"
+                data-thumb="<?=$video->author->avatarThumb?>" data-cover="<?=$video->video->dynamicCover?>"
+                data-description="<?=$video->desc?>" data-created="<?=$video->createTime?>">
+                <div class="video-box-dynamic">
+                    <div class="profile-top">
+                        <a href="https://www.tiktok.com/@<?=$video->author->nickname?>" target="_blank" class="profile-icon">
+                            <img src="<?=$video->author->avatarThumb?>">
+                        </a>
+                        <div class="profile-text">
+                            <h3><?=$video->author->nickname?> <span><?=$video->author->uniqueId?></span></h3>
+                        </div>
+                    </div>
+                    <a href="https://www.tiktok.com/@<?=$video->author->nickname?>/video/<?=($video->id)?>" target="_blank" class="cover">
+                        <img src="<?=$video->video->dynamicCover?>">
                     </a>
-                    <div class="profile-text">
-                        <h3><?=$video->author->nickname?> <span><?=$video->author->uniqueId?></span></h3>
+                    <div class="video-text">
+                        <p><?=$video->desc?></p>
+                        <p class="date"><?=date('M d, Y', $video->createTime)?></p>
                     </div>
                 </div>
-                <a href="https://www.tiktok.com/@<?=$video->author->nickname?>/video/<?=($video->id)?>" target="blank" class="cover">
-                    <img src="<?=$video->video->dynamicCover?>">
-                </a>
-                <div class="video-text">
-                    <p><?=$video->desc?></p>
-                    <p class="date"><?=date('M d, Y', $video->createTime)?></p>
+                <div class="video-box-actions">
+                    <div class="video-box-actions-top">
+                        <div class="video-box-info">
+                            <div class="v-b-i-icon"><i class="fas fa-heart"></i> hearts</div>
+                            <div class="v-b-i-text"><?=number_format($video->stats->diggCount)?></div>
+                        </div>
+                        <div class="video-box-info">
+                            <div class="v-b-i-icon"><i class="fas fa-eye"></i> views</div>
+                            <div class="v-b-i-text"><?=number_format($video->stats->playCount)?></div>
+                        </div>
+                    </div>
+                    <div class="video-box-events">
+                        <div class="video-box-events-box" data-clipboard-text="https://www.tiktok.com/@<?=$video->author->uniqueId?>">
+                            <div class="v-b-e-icon"><i class="fa fa-copy"></i></div>
+                            <div class="v-b-e-text-sub">copy</div>
+                            <div class="v-b-e-text">Profile Link</div>
+                        </div>
+                        <div class="video-box-events-box" data-clipboard-text="https://www.tiktok.com/@<?=$video->author->uniqueId?>/video/<?=($video->id)?>">
+                            <div class="v-b-e-icon"><i class="fa fa-copy"></i></div>
+                            <div class="v-b-e-text-sub">copy</div>
+                            <div class="v-b-e-text">Video Link</div>
+                        </div>
+                    </div>
+                    <div class="video-box-actions-bottom">
+                        <div class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'action-saved': 'action-save'?>">
+                            <div class="v-b-a-icon"><i class="fas <?=array_key_exists($video->id, $saved_ids)? 'fa-check': 'fa-file-upload'?>"></i></div>
+                            <div class="v-b-a-text"><?=array_key_exists($video->id, $saved_ids)? 'saved': 'save'?></div>
+                            <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
+                        </div>
+                        <a <?=array_key_exists($video->id, $saved_ids)? 'href="'.URL.'/saved/videos/'.$video->id.'.mp4"': ''?> class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'no-request': 'action-download'?>">
+                            <div class="v-b-a-icon"><i class="fa fa-download"></i></div>
+                            <div class="v-b-a-text">download</div>
+                            <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="video-box-actions">
-                <div class="video-box-actions-top">
-                    <div class="video-box-info">
-                        <div class="v-b-i-icon"><i class="fas fa-heart"></i> hearts</div>
-                        <div class="v-b-i-text"><?=number_format($video->stats->diggCount)?></div>
-                    </div>
-                    <div class="video-box-info">
-                        <div class="v-b-i-icon"><i class="fas fa-eye"></i> views</div>
-                        <div class="v-b-i-text"><?=number_format($video->stats->playCount)?></div>
-                    </div>
-                </div>
-                <div class="video-box-events">
-                    <div class="video-box-events-box" data-clipboard-text="https://www.tiktok.com/@<?=$video->author->uniqueId?>">
-                        <div class="v-b-e-icon"><i class="fa fa-copy"></i></div>
-                        <div class="v-b-e-text-sub">copy</div>
-                        <div class="v-b-e-text">Profile Link</div>
-                    </div>
-                    <div class="video-box-events-box" data-clipboard-text="https://www.tiktok.com/@<?=$video->author->nickname?>/video/<?=($video->id)?>">
-                        <div class="v-b-e-icon"><i class="fa fa-copy"></i></div>
-                        <div class="v-b-e-text-sub">copy</div>
-                        <div class="v-b-e-text">Video Link</div>
-                    </div>
-                </div>
-                <div class="video-box-actions-bottom">
-                    <div class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'action-saved': 'action-save'?>">
-                        <div class="v-b-a-icon"><i class="fas <?=array_key_exists($video->id, $saved_ids)? 'fa-check': 'fa-file-upload'?>"></i></div>
-                        <div class="v-b-a-text"><?=array_key_exists($video->id, $saved_ids)? 'saved': 'save'?></div>
-                        <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
-                    </div>
-                    <a <?=array_key_exists($video->id, $saved_ids)? 'href="'.URL.'/saved/videos/'.$video->id.'.mp4"': ''?> class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'no-request': 'action-download'?>">
-                        <div class="v-b-a-icon"><i class="fa fa-download"></i></div>
-                        <div class="v-b-a-text">download</div>
-                        <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
-                    </a>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
-    </div>
-    <div class="page-pagination">
-        <?php if ($page != 1):?>
-        <a href="<?=URL?>/admin/?h=<?=$hashtag?>&p=<?=$page-1?>" class="btn-previous"><i class="fas fa-arrow-left"></i> Previous</a>
+
+        <?php if ($content_type === 'hashtag'): ?>
+        <div class="page-pagination">
+            <?php if ($page != 1):?>
+            <a href="<?=URL?>/admin/?<?=$content_type==='hashtag'?"h=$hashtag":"u=$profile_name"?>&p=<?=$page-1?>" class="btn-previous"><i class="fas fa-arrow-left"></i> Previous</a>
+            <?php endif; ?>
+            
+            <?php if ($page != 10):?>
+            <a href="<?=URL?>/admin/?<?=$content_type==='hashtag'?"h=$hashtag":"u=$profile_name"?>&p=<?=$page+1?>" class="btn-next">Next <i class="fas fa-arrow-right"></i></a>
+            <?php endif; ?>
+        </div>
         <?php endif; ?>
-        
-        <?php if ($page != 10):?>
-        <a href="<?=URL?>/admin/?h=<?=$hashtag?>&p=<?=$page+1?>" class="btn-next">Next <i class="fas fa-arrow-right"></i></a>
-        <?php endif; ?>
-    </div>
+
     <?php else: ?>
-    <div class="empty-error">No videos found for this hashtag. <a href="<?=URL?>/admin">Go back</a></div>
+        <div class="empty-error">No videos found for this <?=$content_type === 'hashtag' ? 'hashtag' : ($content_type === 'video' ? 'link' : ($content_type === 'profile' ? 'profile' : ''))?>. <a href="<?=URL?>/admin">Go back</a></div>
     <?php endif; ?>
 
 <?php endif; ?>
 
 <script src="<?=URL?>/assets/js/clipboard.min.js"></script>
 <script>
-
     let clipboard = new ClipboardJS('.video-box-events-box');
-    clipboard.on('success', function(e) {
-        let t = e.trigger;
-        $(t).find('.v-b-e-icon i').removeClass('fa-copy').addClass('fa-check');
-        $(t).find('.v-b-e-text-sub').text('copied');
+    clipboard.on('success', (e) => {
+        let t = $(e.trigger);
+        t.find('.v-b-e-icon i').removeClass('fa-copy').addClass('fa-check');
+        t.find('.v-b-e-text-sub').text('copied');
         setTimeout(() => {
-            $(t).find('.v-b-e-icon i').addClass('fa-copy').removeClass('fa-check');
-            $(t).find('.v-b-e-text-sub').text('copy');
+            t.find('.v-b-e-icon i').addClass('fa-copy').removeClass('fa-check');
+            t.find('.v-b-e-text-sub').text('copy');
         }, 1000);
         e.clearSelection();
     });
@@ -146,9 +140,10 @@
             }
         });
     });
+
     $('.action-download').on('click', (e) => {
         let target = $(e.target.parentElement.parentElement.parentElement);
-        if (target.hasClass('no-request')) { return ; }
+        if (target.find('.action-download').hasClass('no-request')) { return ; }
 
         const data = { download_video: "", video_id: target.attr('data-videoid'), username: target.attr('data-username')};
 

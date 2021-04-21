@@ -45,3 +45,29 @@ function json_response ($status_code, $type, $message)
     echo json_encode(['code' => $status_code, 'type' => $type, 'message' => $message]);
     die();
 }
+
+function content_type_to_name ($content_type)
+{
+    if ($content_type === 'hashtag' || $content_type === "") {
+        return 'hashtag';
+    }
+    if ($content_type === 'profile') {
+        return 'profile';
+    }
+    if ($content_type === 'video') {
+        return 'video';
+    }
+}
+
+function content_type_to_fa ($content_type)
+{
+    if ($content_type === 'hashtag' || $content_type === "") {
+        return 'hashtag';
+    }
+    if ($content_type === 'profile') {
+        return 'id-badge';
+    }
+    if ($content_type === 'video') {
+        return 'video';
+    }
+}

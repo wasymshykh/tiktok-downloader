@@ -1,15 +1,4 @@
-<div class="search-container">
-    <form action="<?=URL?>/admin" method="post" class="search-form">
-        <label for="hashtag">#</label>
-        <input type="text" name="hashtag" id="hashtag" placeholder="Search hashtag..." required>
-        <button type="submit"><i class="fas fa-arrow-right"></i></button>
-    </form>
-    
-    <?php if (!empty($errors)): ?>
-        <div class="field-error"><strong>Error<?=count($errors)>1?'s':''?>!</strong> <?php foreach ($errors as $error): ?><?=$error.'. '?><?php endforeach;?></div>
-    <?php endif; ?>
-
-</div>
+<?php include_once DIR.'views/layout/search.view.php'; ?>
 
 <div class="results">
     <div class="results-title">
@@ -26,16 +15,16 @@
         <div class="video-box" data-videoid="<?=$video['video_id']?>">
             <div class="video-box-dynamic">
                 <div class="profile-top">
-                    <div class="profile-icon">
+                    <a href="https://www.tiktok.com/@<?=$video['video_author_username']?>" target="_blank"  class="profile-icon">
                         <img src="<?=URL?>/saved/thumb/<?=$video['video_author_picture']?>">
-                    </div>
+                    </a>
                     <div class="profile-text">
                         <h3><?=$video['video_author_nick']?> <span><?=$video['video_author_username']?></span></h3>
                     </div>
                 </div>
-                <div class="cover">
+                <a href="https://www.tiktok.com/@<?=$video['video_author_username']?>/video/<?=$video['video_id']?>" target="_blank" class="cover">
                     <img src="<?=URL?>/saved/dynamic/<?=$video['video_cover']?>">
-                </div>
+                </a>
                 <div class="video-text">
                     <p><?=$video['video_desc']?></p>
                     <p class="date"><?=normal_date($video['video_dated'], 'M d, Y')?></p>

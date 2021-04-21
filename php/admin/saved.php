@@ -13,6 +13,8 @@ $auth = $auth['data'];
 
 $errors = [];
 
+$content_type = "";
+
 $videos = $a->get_saved_videos($auth['user_id']);
 if ($videos['status']) {
     $videos = $videos['data'];
