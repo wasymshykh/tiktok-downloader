@@ -163,9 +163,10 @@ class Account {
         return ['status' => true, 'type' => 'success'];
     }
 
-    public function get_saved_videos ($user_id)
+    public function get_saved_videos ($user_id, $sort = false)
     {
         $q = "SELECT * FROM `videos` WHERE `video_user_id` = :i";
+        if ($sort) { $q .= " ORDER BY `video_created` DESC"; }
         $s = $this->db->prepare($q);
         $s->bindParam(":i", $user_id);
         if (!$s->execute()) {

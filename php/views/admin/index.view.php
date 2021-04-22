@@ -21,14 +21,14 @@
                 data-description="<?=$video->desc?>" data-created="<?=$video->createTime?>">
                 <div class="video-box-dynamic">
                     <div class="profile-top">
-                        <a href="https://www.tiktok.com/@<?=$video->author->nickname?>" target="_blank" class="profile-icon">
+                        <a href="https://www.tiktok.com/@<?=$video->author->uniqueId?>" target="_blank" class="profile-icon">
                             <img src="<?=$video->author->avatarThumb?>">
                         </a>
                         <div class="profile-text">
                             <h3><?=$video->author->nickname?> <span><?=$video->author->uniqueId?></span></h3>
                         </div>
                     </div>
-                    <a href="https://www.tiktok.com/@<?=$video->author->nickname?>/video/<?=($video->id)?>" target="_blank" class="cover">
+                    <a href="https://www.tiktok.com/@<?=$video->author->uniqueId?>/video/<?=($video->id)?>" target="_blank" class="cover">
                         <img src="<?=$video->video->dynamicCover?>">
                     </a>
                     <div class="video-text">

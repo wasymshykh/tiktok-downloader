@@ -44,9 +44,43 @@ if (isset($_POST['hashtag']) && !empty($_POST['hashtag']) && is_string($_POST['h
     $p_match = [];
     preg_match_all('/\/@(.+)\/video\/(\d+)/', $video_link, $p_match);
 
+
     if (empty($p_match[1]) || empty($p_match[2])) {
-        $errors[] = "URL format is invalid. Example format is: <i>https://www.tiktok.com/@Jack/video/6787475722014297349</i>";
-    } else {
+
+        // checking for short video link
+        $url = rtrim($video_link, '/');
+        if (preg_match('/^https\:\/\/[A-z]{2}\.tiktok\.com\/[A-z0-9]*$/', $url)) {
+            try {
+                $session = new Requests_Session($video_link);
+
+                $c = new Requests_Cookie_Jar(['tt_webid_v2'=>'6953781795062793734', 'tt_webid'=>'6953781795062793734', 'tt_csrf_token'=>'4nzOwdoDMo_J1eAEFhTPYykK']);
+                $request = $session->get('',[], ['cookies' => $c]);
+                $content = $request->body;
+                
+                $matches = [];
+                preg_match_all('/\<link data\-react-helmet=\"true\" rel\=\"canonical\" href\=\"(.[^>]+)\"\/\>/', $content, $matches);
+                if (!empty($matches[1])) {
+                    $original_url = $matches[1][0];
+
+                    $p_match = [];
+                    preg_match_all('/\/@(.+)\/video\/(\d+)/', $original_url, $p_match);
+                    if (empty($p_match[1]) || empty($p_match[2])) {
+                        $errors[] = "Unable to fetch the complete url. Probably tiktok changed something.1";
+                    }
+
+                } else {
+                    $errors[] = "Unable to fetch the complete url. Probably tiktok changed something.";
+                }
+            } catch (Exception $e) {
+                $errors[] = "Unable to fetch the complete url. Retry";
+            }
+        } else {
+            $errors[] = "URL format is invalid. Example format is: <i>https://www.tiktok.com/@Jack/video/6787475722014297349</i> or <i>https://vm.tiktok.com/ZMex2Pmgj/</i>";
+        }
+
+    }
+    
+    if (empty($errors)) {
         $profile_name = $p_match[1][0];
         $video_id = $p_match[2][0];
         

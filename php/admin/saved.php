@@ -15,7 +15,7 @@ $errors = [];
 
 $content_type = "";
 
-$videos = $a->get_saved_videos($auth['user_id']);
+$videos = $a->get_saved_videos($auth['user_id'], true);
 if ($videos['status']) {
     $videos = $videos['data'];
 } else {
