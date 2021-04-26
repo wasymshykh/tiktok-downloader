@@ -208,10 +208,16 @@ class Account {
             $this->logs->create($this->class_name_lower, $failure, json_encode($s->errorInfo()));
             return ['status' => false, 'type' => 'query', 'data' => $failure];
         }
-        if ($s->rowCount() > 0) {
-            return ['status' => true, 'type' => 'success'];
+
+        $q = "ALTER TABLE `videos` AUTO_INCREMENT = 1;";
+        $s = $this->db->prepare($q);
+        if (!$s->execute()) {
+            $failure = $this->class_name.'.remove_saved_video_by_id - E.02: Failure';
+            $this->logs->create($this->class_name_lower, $failure, json_encode($s->errorInfo()));
+            return ['status' => false, 'type' => 'query', 'data' => $failure];
         }
-        return ['status' => false, 'type' => 'empty'];
+
+        return ['status' => true];
     }
 
 }

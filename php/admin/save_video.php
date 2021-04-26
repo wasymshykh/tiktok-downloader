@@ -193,27 +193,39 @@ if (isset($_POST['save_video'])) {
 
     if (empty($errors)) {
 
-        // removing video file
-        $video_file = DIR.'saved/videos/'.$r['video_id'].'.mp4';
-        if (file_exists($video_file)) {
-            unlink($video_file);
-        }
-        // removing thumb file
-        $thumb_file = DIR.'saved/thumb/'.$r['video_author_picture'];
-        if (file_exists($thumb_file)) {
-            unlink($thumb_file);
-        }
-        // removing dynamic cover file
-        $dynamic_file = DIR.'saved/dynamic/'.$r['video_cover'];
-        if (file_exists($dynamic_file)) {
-            unlink($dynamic_file);
-        }
+        try {
 
-        $r = $a->remove_saved_video_by_id($auth['user_id'], $video_id);
-        if ($r['status']) {
+            $db->beginTransaction();
+
+            // removing video file
+            $video_file = DIR.'saved/videos/'.$r['video_index'].'.mp4';
+            if (file_exists($video_file)) {
+                unlink($video_file);
+            }
+            // removing thumb file
+            $thumb_file = DIR.'saved/thumb/'.$r['video_author_picture'];
+            if (file_exists($thumb_file)) {
+                unlink($thumb_file);
+            }
+            // removing dynamic cover file
+            $dynamic_file = DIR.'saved/dynamic/'.$r['video_cover'];
+            if (file_exists($dynamic_file)) {
+                unlink($dynamic_file);
+            }
+
+            $r = $a->remove_saved_video_by_id($auth['user_id'], $video_id);
+            if (!$r['status']) {
+                json_response(403, 'error', ["Unable to remove video"]);
+            }
+
+            $db->commit();
             json_response(200, 'success', ["Video has been removed"]);
-        } else {
-            json_response(403, 'error', ["Unable to remove video"]);
+
+        } catch (Exception $e) {
+            $db->rollBack();
+
+            $logs->create("php_api", "Exception in save_video.php", json_encode($e->getMessage()));
+            json_response(400, 'error', ["Unable to remove the file"]);
         }
 
     } else {

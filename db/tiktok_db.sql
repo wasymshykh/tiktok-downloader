@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 19, 2021 at 08:59 PM
+-- Generation Time: Apr 26, 2021 at 08:06 PM
 -- Server version: 10.4.13-MariaDB
 -- PHP Version: 7.4.7
 
@@ -74,6 +74,13 @@ CREATE TABLE `users` (
   `user_created` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`user_id`, `user_username`, `user_password`, `user_first_name`, `user_last_name`, `user_email`, `user_created`) VALUES
+(1, 'admin', 'admin', 'John', 'Hopkins', 'test@test.com', '2021-04-18 14:05:33');
+
 -- --------------------------------------------------------
 
 --
@@ -81,6 +88,7 @@ CREATE TABLE `users` (
 --
 
 CREATE TABLE `videos` (
+  `video_index` int(11) NOT NULL,
   `video_id` varchar(40) NOT NULL,
   `video_user_id` int(11) DEFAULT NULL,
   `video_author_id` varchar(100) DEFAULT NULL,
@@ -120,7 +128,8 @@ ALTER TABLE `users`
 -- Indexes for table `videos`
 --
 ALTER TABLE `videos`
-  ADD PRIMARY KEY (`video_id`),
+  ADD PRIMARY KEY (`video_index`),
+  ADD UNIQUE KEY `videos_un` (`video_id`),
   ADD KEY `videos_FK` (`video_user_id`);
 
 --
@@ -137,7 +146,13 @@ ALTER TABLE `logs`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `videos`
+--
+ALTER TABLE `videos`
+  MODIFY `video_index` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables

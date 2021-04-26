@@ -129,7 +129,7 @@
                 let video_index = d.message[1];
                 
                 // replacing download with local file ref
-                let h = target.parent().find('.action-download');
+                let h = target.find('.action-download');
                 h.addClass('no-request');
                 h.attr('href', '<?=URL?>/saved/videos/'+video_index+'.mp4');
             },
