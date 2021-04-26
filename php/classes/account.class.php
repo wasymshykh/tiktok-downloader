@@ -160,7 +160,7 @@ class Account {
             return ['status' => false, 'type' => 'query', 'data' => $failure];
         }
 
-        return ['status' => true, 'type' => 'success'];
+        return ['status' => true, 'type' => 'success', 'video_index' => $this->db->lastInsertId()];
     }
 
     public function get_saved_videos ($user_id, $sort = false)

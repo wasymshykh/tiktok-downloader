@@ -80,7 +80,21 @@ if (isset($_POST['save_video'])) {
             
             if (!empty($video['data'])) {
 
+
                 try {
+
+                    $db->beginTransaction();
+
+                    $thumb_file_name = "$author_id.jpeg";
+                    $cover_file_name = "$video_id.webp";
+
+                    $r = $a->save_video_data($auth['user_id'], $video_id, $author_id, $username, $nick, $thumb_file_name, $description, $cover_file_name, $created, $video['data']);
+                    if (!$r['status']) {
+                        $db->rollBack();
+                        json_response(400, 'error', ["System error: 1006"]);
+                    }
+                    $video_id = $r['video_index'];
+
                     $video_stream = file_get_contents($video['data']);
                     $thumb_stream = file_get_contents($thumb);
                     $cover_stream = file_get_contents($cover);
@@ -90,28 +104,26 @@ if (isset($_POST['save_video'])) {
                     fwrite($handle, $video_stream);
                     fclose($handle);
     
-                    $thumb_file_name = "$author_id.jpeg";
                     $thumb_file_path = DIR."saved/thumb/$thumb_file_name";
                     $handle = fopen($thumb_file_path,"w+");
                     fwrite($handle, $thumb_stream);
                     fclose($handle);
     
-                    $cover_file_name = "$video_id.webp";
                     $cover_file_path = DIR."saved/dynamic/$cover_file_name";
                     $handle = fopen($cover_file_path,"w+");
                     fwrite($handle, $cover_stream);
                     fclose($handle);
+
+                    $db->commit();
+                    json_response(200, 'success', ['Successfully saved!', $video_id]);
+
                 } catch (Exception $e) {
+                    $db->rollBack();
+
                     $logs->create("node_api", "Exception in save_video.php", json_encode($e->getMessage()));
                     json_response(400, 'error', ["Unable to save the file"]);
                 }
-
-                $r = $a->save_video_data($auth['user_id'], $video_id, $author_id, $username, $nick, $thumb_file_name, $description, $cover_file_name, $created, $video['data']);
-                if ($r['status']) {
-                    json_response(200, 'success', 'Successfully saved!');
-                } else {
-                    json_response(400, 'error', ["System error: 1006"]);
-                }
+                
             } else {
                 $logs->create("node_api", "Exception in save_video.php", json_encode(['data' => $r['data']]));
                 json_response(400, 'error', ["System error: 1005"]);

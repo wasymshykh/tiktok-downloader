@@ -5,3 +5,5 @@
 /php/saved/dynamic/*.webp
 /php/saved/thumb/*.jpeg
 /php/saved/videos/*.mp4
+*.yml
+*.zip

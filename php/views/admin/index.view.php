@@ -65,7 +65,7 @@
                             <div class="v-b-a-text"><?=array_key_exists($video->id, $saved_ids)? 'saved': 'save'?></div>
                             <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
                         </div>
-                        <a <?=array_key_exists($video->id, $saved_ids)? 'href="'.URL.'/saved/videos/'.$video->id.'.mp4"': ''?> class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'no-request': 'action-download'?>">
+                        <a <?=array_key_exists($video->id, $saved_ids)? 'href="'.URL.'/saved/videos/'.$saved_ids[$video->id]['video_index'].'.mp4"': ''?> class="video-box-action <?=array_key_exists($video->id, $saved_ids)? 'no-request': 'action-download'?>">
                             <div class="v-b-a-icon"><i class="fa fa-download"></i></div>
                             <div class="v-b-a-text">download</div>
                             <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
@@ -125,11 +125,13 @@
                 t.removeClass('loading').removeClass('error').removeClass('action-save').addClass('action-saved');
                 t.find('.v-b-a-text').text('saved');
                 ic.removeClass('fa-file-upload').removeClass('fa-redo').addClass('fa-check');
+
+                let video_index = d.message[1];
                 
                 // replacing download with local file ref
                 let h = target.parent().find('.action-download');
                 h.addClass('no-request');
-                h.attr('href', '<?=URL?>/saved/videos/'+data.video_id+'.mp4');
+                h.attr('href', '<?=URL?>/saved/videos/'+video_index+'.mp4');
             },
             error: (e) => {
                 if (e.responseJSON === undefined || e.responseJSON.type === 'error') {

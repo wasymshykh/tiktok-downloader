@@ -47,7 +47,7 @@
                         <div class="v-b-a-text">remove</div>
                         <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
                     </div>
-                    <a href="<?=URL?>/saved/videos/<?=$video['video_id']?>.mp4" class="video-box-action action-download">
+                    <a href="<?=URL?>/saved/videos/<?=$video['video_index']?>.mp4" class="video-box-action action-download">
                         <div class="v-b-a-icon"><i class="fa fa-download"></i></div>
                         <div class="v-b-a-text">download</div>
                         <div class="v-b-a-loading"><i class="fas fa-spinner fa-spin"></i></div>
